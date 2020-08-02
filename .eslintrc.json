@@ -1,0 +1,8 @@
+{
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+        "parser": "prettier",
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    }
+}

@@ -9,7 +9,7 @@
 // @ is an alias to /src
 import Navigation from "@/components/Navigation.vue";
 import db from "./db.js";
-//import firebase from "firebase";
+import firebase from "firebase";
 
 export default {
   name: "app",
@@ -19,12 +19,11 @@ export default {
     };
   },
   mounted() {
-    db.collection("users")
-      .doc("AUTrb0BUjcmmlakjtgvc")
-      .get()
-      .then(snapshot => {
-        this.user = snapshot.data().name;
-      });
+    firebase.auth().onAuthStateChanged(user =>{
+      if(user){
+         this.user = user.name;
+      }
+    })
   },
   components: {
     Navigation
