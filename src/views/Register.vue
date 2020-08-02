@@ -107,14 +107,23 @@ export default {
         displayName:this.displayName
       }
       if(!this.error){
-        firebase.auth().
-          createUserWithEmailAndPassword(info.email,info.password)
-          .then(userCreated => {
-              this.$router.replace('meetings');
-          }, error =>{
+        firebase.auth()
+          .createUserWithEmailAndPassword(info.email,info.password)
+          .then(
+            userCreated => {
+              return userCreated.user.updateProfile({
+                 displayName: info.displayName
+              })
+              .then(()=>{
+                  this.$router.replace('meetings');
+              });
+          }, 
+          error =>{
             this.error = error.message;
-          }
-          );
+          });
+      }
+      else{
+        this.error = 'Passwords do not match';
       }
     }
   },

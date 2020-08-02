@@ -21,7 +21,7 @@ export default {
   mounted() {
     firebase.auth().onAuthStateChanged(user =>{
       if(user){
-         this.user = user.name;
+         this.user = user.displayName;
       }
     })
   },
