@@ -1,8 +1,8 @@
 <template>
-  <div id="app">
-    <Navigation />
-    <router-view class="container" :user="user" />
-  </div>
+	<div id="app">
+		<Navigation />
+		<router-view class="container" :user="user" @logout="logout" />
+	</div>
 </template>
 
 <script>
@@ -12,22 +12,33 @@ import db from "./db.js";
 import firebase from "firebase";
 
 export default {
-  name: "app",
-  data: function() {
-    return {
-      user: null
-    };
-  },
-  mounted() {
-    firebase.auth().onAuthStateChanged(user =>{
-      if(user){
-         this.user = user.displayName;
-      }
-    })
-  },
-  components: {
-    Navigation
-  }
+	name: "app",
+	data: function() {
+		return {
+			user: null,
+		};
+	},
+	methods: {
+		logout: function() {
+			firebase
+				.auth()
+				.signOut()
+				.then(() => {
+					this.user = null;
+					this.$router, push("/login");
+				});
+		},
+	},
+	mounted() {
+		firebase.auth().onAuthStateChanged((user) => {
+			if (user) {
+				this.user = user.displayName;
+			}
+		});
+	},
+	components: {
+		Navigation,
+	},
 };
 </script>
 <style lang="scss">
