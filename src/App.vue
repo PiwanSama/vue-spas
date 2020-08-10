@@ -5,9 +5,11 @@
 		 class="container"
 		 :user="user"
 		 :meetings = "meetings"
+		 :error = "error"
 		 @logout="logout"
 		 @addMeeting="addMeeting"
 		 @deleteMeeting = "deleteMeeting"
+		 @CheckIn="CheckIn"
 		/>
 	</div>
 </template>
@@ -23,6 +25,7 @@ export default {
 	data: function() {
 		return {
 			user: null,
+			error:null,
 			meetings:[]
 		};
 	},
@@ -51,6 +54,30 @@ export default {
 			.collection("meetings")
 			.doc(payload)
 			.delete()
+		},
+		CheckIn: function(payload){
+			db.collection("users")
+			.doc(payload.userID)
+			.collection("meetings")
+			.doc(payload.meetingID)
+			.get()
+			.then(doc => {
+				if(doc.exists){
+					db.collection("users")
+					.doc(payload.userID)
+					.collection("meetings")
+					.doc(payload.meetingID)
+					.collection("attendees")
+					.add({
+						displayName:payload.displayName,
+						email:payload.email,
+						createdAt:firebase.firestore.FieldValue.serverTimestamp()
+					})
+					.then(()=>this.$router.push("/"))
+				}else{
+					this.error = "Sorry, this meeting doesn't exist"
+				}
+			})
 		}
 	},
 	mounted() {
