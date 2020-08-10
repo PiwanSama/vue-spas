@@ -2,10 +2,12 @@
 	<div id="app">
 		<Navigation/>
 		<router-view 
-		 class="container" 
+		 class="container"
 		 :user="user"
+		 :meetings = "meetings"
 		 @logout="logout"
-		 @addMeeting="addMeeting" />
+		 @addMeeting="addMeeting" 
+		/>
 	</div>
 </template>
 
@@ -47,12 +49,27 @@ export default {
 		firebase.auth().onAuthStateChanged((user) => {
 			if (user) {
 				this.user = user;
+				
+				db.collection("users")
+				.doc(this.user.uid)
+				.collection("meetings")
+				.orderBy("name")
+				.onSnapshot(snapshot => {
+					const snapData = [];
+					snapshot.forEach(doc => {
+						snapData.push({
+							id: doc.id,
+							name: doc.data().name
+						});
+					});
 
+					this.meetings = snapData;
+				});
 			}
 		});
 	},
 	components: {
-		Navigation,
+		Navigation
 	},
 };
 </script>
