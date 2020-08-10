@@ -1,8 +1,11 @@
 <template>
 	<div id="app">
-		<Navigation />
-		<router-view class="container" 
-		:user="user" @logout="logout" />
+		<Navigation/>
+		<router-view 
+		 class="container" 
+		 :user="user"
+		 @logout="logout"
+		 @addMeeting="addMeeting" />
 	</div>
 </template>
 
@@ -17,6 +20,7 @@ export default {
 	data: function() {
 		return {
 			user: null,
+			meetings:[]
 		};
 	},
 	methods: {
@@ -26,14 +30,24 @@ export default {
 				.signOut()
 				.then(() => {
 					this.user = null;
-					this.$router, push("/login");
+					this.$router, push("login");
 				});
 		},
+		addMeeting: function(payload){
+			db.collection("users")
+			.doc(this.user.uid)
+			.collection("meetings")
+			.add({
+				name:payload,
+				createdAt:firebase.firestore.FieldValue.serverTimestamp()
+			})
+		}
 	},
 	mounted() {
 		firebase.auth().onAuthStateChanged((user) => {
 			if (user) {
-				this.user = user.displayName;
+				this.user = user;
+
 			}
 		});
 	},
